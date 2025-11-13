@@ -6,7 +6,7 @@ let layerImgs = [];
 let layerSegments = [];
 
 
-let layerAngles = [10, 0, 90, 0, 90,90];
+let layerAngles = [-10, 0, 90, 0, 90,90];
 let numSegments = 90;
 
 let movingLayers = [0, 1, 2];
