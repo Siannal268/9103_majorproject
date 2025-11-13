@@ -1,4 +1,5 @@
 //We need a variable to hold our image
+//We need a variable to hold our image
 let baseImg; 
 
 let layerImgs = []; 
@@ -6,8 +7,8 @@ let layerImgs = [];
 let layerSegments = [];
 
 //We will divide the image into segments
-let layerAngles = [45, 135, 90, 0, 90,30];
-let numSegments = 100;
+let layerAngles = [-10, 0, 90, 0, 90,30];
+let numSegments = 90;
 
 let movingLayers = [0, 1, 2];
 
@@ -21,7 +22,7 @@ let canvasAspectRatio = 0;
 //let's load the image from disk
 function preload() {
 
-  baseImg = loadImage('assets/diban.png');  
+  baseImg = loadImage('assets/Edvard_Munch_The_Scream.jpeg');  
 
   layerImgs[0] = loadImage('assets/firesky.png');
   layerImgs[1] = loadImage('assets/bluesky.png');
@@ -49,7 +50,17 @@ function setup() {
 }
 
 function draw() {
-  background(0);
+   background(0);
+
+  // ⭐ 先画“底板”图片（在最底层）
+  image(
+    baseImg,
+    imgDrwPrps.xOffset,
+    imgDrwPrps.yOffset,
+    imgDrwPrps.width,
+    imgDrwPrps.height
+  );
+
   
     //let's draw the segments to the canvas
     for (const segArray of layerSegments) {
@@ -176,10 +187,26 @@ class ImageSegment {
   update() {
   this.currentX = this.drawXPos;
   this.currentY = this.drawYPos;
+  // layer 4：screamer → 上下移动
+
+  
+
+
+  if (this.layerIndex === 0) {
+      let speed = 0.03;                     // 移动速度
+      let amplitude = this.drawWidth;       // 移动幅度（可调）
+
+      let waveOffset = sin(
+      frameCount * speed + this.columnPosition * 0.3 + this.phase
+    ) * amplitude;
+
+    this.currentX = this.drawXPos + waveOffset; // 只改 X
+    this.currentY = this.drawYPos;    
+    }
 
   // 绿色 layer（layerIndex = 2）：上下动
   if (this.layerIndex === 2) {
-    let speed = 0.03;
+    let speed = 0.05;
     let amplitude = this.drawHeight;
 
     let waveOffset = sin(frameCount * speed + this.rowPostion * 0.3 + this.phase) * amplitude;
@@ -189,56 +216,36 @@ class ImageSegment {
 
   // 蓝色 layer（layerIndex = 1）：沿 135° 摆动
   if (this.layerIndex === 1) {
+    let speed = 0.08;                    // 移动速度
+    let amplitude = this.drawWidth;      // 左右移动距离（可以改小点比如 *0.5）
 
-    let speed = 0.02;
-    let amplitude = this.drawHeight;
+    let waveOffset = sin(
+      frameCount * speed + this.columnPosition * 0.3 + this.phase
+    ) * amplitude;
 
-    let waveOffset = sin(frameCount * speed + this.columnPosition * 0.3 + this.phase) * amplitude;
-
-    // 135° 方向的单位向量 = (-√2/2, +√2/2)
-    let dx = -0.7071 * waveOffset; // 左
-    let dy =  0.7071 * waveOffset; // 下
-
-    this.currentX = this.drawXPos + dx;
-    this.currentY = this.drawYPos + dy;
+    this.currentX = this.drawXPos + waveOffset; // 只改 X
+    this.currentY = this.drawYPos;              // Y 保持不变
   }
 }
 
-  draw() {
-
-    image(
-  baseImg,
-  imgDrwPrps.xOffset,
-  imgDrwPrps.yOffset,
-  imgDrwPrps.width,
-  imgDrwPrps.height
-);
-
-    //let's draw the segment to the canvas, first we set the stroke and fill colours
+    draw() {
     stroke(this.srcImgSegColour);
-  strokeWeight(3); // 线粗一点，方便看清
+    strokeWeight(3);
 
-  // 先算当前格子的中心线位置
-  let cx = this.currentX + this.drawWidth / 2;
-let cy = this.currentY + this.drawHeight / 2;
+    let cx = this.currentX + this.drawWidth / 2;
+    let cy = this.currentY + this.drawHeight / 2;
 
-  // 线的长度（用格子尺寸的一部分）
-  let halfLen = min(this.drawWidth, this.drawHeight) * 0.5;
+    let halfLen = min(this.drawWidth, this.drawHeight) * 0.5;
+    let rad = this.angle * PI / 180;
 
-  // 角度从度数转成弧度（p5 里的 cos/sin 用弧度）
-  let rad = this.angle * PI / 180;
+    let dx = cos(rad) * halfLen;
+    let dy = sin(rad) * halfLen;
 
-  // 根据角度算出线两端的坐标
-  let dx = cos(rad) * halfLen;
-  let dy = sin(rad) * halfLen;
+    let x1 = cx - dx;
+    let y1 = cy - dy;
+    let x2 = cx + dx;
+    let y2 = cy + dy;
 
-  let x1 = cx - dx;
-  let y1 = cy - dy;
-  let x2 = cx + dx;
-  let y2 = cy + dy;
-
-  line(x1, y1, x2, y2);
-}
-
-
+    line(x1, y1, x2, y2);
+  }
 }
