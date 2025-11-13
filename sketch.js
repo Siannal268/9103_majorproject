@@ -185,46 +185,48 @@ class ImageSegment {
   }
 
   update() {
+  // 🔸 用真实时间（秒）代替 frameCount
+  let t = millis() / 1000.0;
+
   this.currentX = this.drawXPos;
   this.currentY = this.drawYPos;
-  // layer 4：screamer → 上下移动
 
-  
-
-
+  // 🔴 layer 0：左右晃
   if (this.layerIndex === 0) {
-      let speed = 0.03;                     // 移动速度
-      let amplitude = this.drawWidth;       // 移动幅度（可调）
+    let speed = 2.0;              // 注意这里的 speed 变成 “每秒的速度”，数值比原来大
+    let amplitude = this.drawWidth;
 
-      let waveOffset = sin(
-      frameCount * speed + this.columnPosition * 0.3 + this.phase
+    let waveOffset = sin(
+      t * speed + this.columnPosition * 0.3 + this.phase
     ) * amplitude;
 
-    this.currentX = this.drawXPos + waveOffset; // 只改 X
+    this.currentX = this.drawXPos + waveOffset;
     this.currentY = this.drawYPos;    
-    }
+  }
 
-  // 绿色 layer（layerIndex = 2）：上下动
+  // 🟢 layer 2：上下晃
   if (this.layerIndex === 2) {
-    let speed = 0.05;
+    let speed = 2.5;              // 同理，这里也是“每秒”
     let amplitude = this.drawHeight;
 
-    let waveOffset = sin(frameCount * speed + this.rowPostion * 0.3 + this.phase) * amplitude;
+    let waveOffset = sin(
+      t * speed + this.rowPostion * 0.3 + this.phase
+    ) * amplitude;
 
     this.currentY = this.drawYPos + waveOffset;
   }
 
-  // 蓝色 layer（layerIndex = 1）：沿 135° 摆动
+  // 🔵 layer 1：左右晃
   if (this.layerIndex === 1) {
-    let speed = 0.08;                    // 移动速度
-    let amplitude = this.drawWidth;      // 左右移动距离（可以改小点比如 *0.5）
+    let speed = 3.0;
+    let amplitude = this.drawWidth;
 
     let waveOffset = sin(
-      frameCount * speed + this.columnPosition * 0.3 + this.phase
+      t * speed + this.columnPosition * 0.3 + this.phase
     ) * amplitude;
 
-    this.currentX = this.drawXPos + waveOffset; // 只改 X
-    this.currentY = this.drawYPos;              // Y 保持不变
+    this.currentX = this.drawXPos + waveOffset;
+    this.currentY = this.drawYPos;
   }
 }
 
