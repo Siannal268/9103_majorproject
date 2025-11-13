@@ -1,25 +1,24 @@
-//We need a variable to hold our image
-//We need a variable to hold our image
+
 let baseImg; 
 
 let layerImgs = []; 
 
 let layerSegments = [];
 
-//We will divide the image into segments
-let layerAngles = [-10, 0, 90, 0, 90,30];
+
+let layerAngles = [10, 0, 90, 0, 90,90];
 let numSegments = 90;
 
 let movingLayers = [0, 1, 2];
 
 
-//Let's make an object to hold the draw properties of the image
+
 let imgDrwPrps = {aspect: 0, width: 0, height: 0, xOffset: 0, yOffset: 0};
 
-//And a variable for the canvas aspect ratio
+
 let canvasAspectRatio = 0;
 
-//let's load the image from disk
+
 function preload() {
 
   baseImg = loadImage('assets/Edvard_Munch_The_Scream.jpeg');  
@@ -34,12 +33,12 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  imgDrwPrps.aspect = baseImg.width / baseImg.height; // ⭐ 用底板图算比例
+  imgDrwPrps.aspect = baseImg.width / baseImg.height; 
   calculateImageDrawProps();
   for (let i = 0; i < layerImgs.length; i++) {
-    let segArray = [];                         // 存这一张图的小格子
+    let segArray = [];                         
     createSegmentsFromImage(layerImgs[i], segArray, i);
-    layerSegments.push(segArray);              // 丢进大数组里
+    layerSegments.push(segArray);              
   }
 
   for (const segArray of layerSegments) {
@@ -52,7 +51,7 @@ function setup() {
 function draw() {
    background(0);
 
-  // ⭐ 先画“底板”图片（在最底层）
+
   image(
     baseImg,
     imgDrwPrps.xOffset,
@@ -62,7 +61,7 @@ function draw() {
   );
 
   
-    //let's draw the segments to the canvas
+ 
     for (const segArray of layerSegments) {
     for (const segment of segArray) {
       segment.update();
@@ -103,10 +102,10 @@ function createSegmentsFromImage(srcImg, targetArray, layerIndex) {
         positionInRow,
         segmentColour,
         angleForThisLayer,
-        layerIndex // 这个 segment 属于哪一层
+        layerIndex 
       );
 
-      // ⭐⭐ 这一行一定要有：把 segment 丢进这个图层的数组里
+      
       targetArray.push(segment);
 
       positionInRow++;
@@ -116,33 +115,33 @@ function createSegmentsFromImage(srcImg, targetArray, layerIndex) {
 }
 
 function calculateImageDrawProps() {
-  //Calculate the aspect ratio of the canvas
+  
   canvasAspectRatio = width / height;
-  //if the image is wider than the canvas
+  
   if (imgDrwPrps.aspect > canvasAspectRatio) {
-    //then we will draw the image to the width of the canvas
+    
     imgDrwPrps.width = width;
-    //and calculate the height based on the aspect ratio
+   
     imgDrwPrps.height = width / imgDrwPrps.aspect;
     imgDrwPrps.yOffset = (height - imgDrwPrps.height) / 2;
     imgDrwPrps.xOffset = 0;
   } else if (imgDrwPrps.aspect < canvasAspectRatio) {
-    //otherwise we will draw the image to the height of the canvas
+   
     imgDrwPrps.height = height;
-    //and calculate the width based on the aspect ratio
+  
     imgDrwPrps.width = height * imgDrwPrps.aspect;
     imgDrwPrps.xOffset = (width - imgDrwPrps.width) / 2;
     imgDrwPrps.yOffset = 0;
   }
   else if (imgDrwPrps.aspect == canvasAspectRatio) {
-    //if the aspect ratios are the same then we can draw the image to the canvas size
+  
     imgDrwPrps.width = width;
     imgDrwPrps.height = height;
     imgDrwPrps.xOffset = 0;
     imgDrwPrps.yOffset = 0;
   }
 }
-//Here is our class for the image segments, we start with the class keyword
+
 class ImageSegment {
 
   constructor(
@@ -150,7 +149,7 @@ class ImageSegment {
     rowPostionInPrm,
     srcImgSegColourInPrm,
     angleInPrm,
-    layerIndexInPrm   // ← 把它加到这里
+    layerIndexInPrm  
   ) {
     this.columnPosition = columnPositionInPrm;
     this.rowPostion = rowPostionInPrm;
@@ -158,7 +157,7 @@ class ImageSegment {
 
     this.angle = angleInPrm;
 
-    // 现在这个变量就有了，从参数里来的
+    
     this.layerIndex = layerIndexInPrm;
 
     this.drawXPos = 0;
@@ -176,24 +175,21 @@ class ImageSegment {
     this.drawHeight = imgDrwPrps.height / numSegments;
     
     
-    //The x position is the row position multiplied by the width of the segment plus the x offset we calculated for the image
     this.drawXPos = this.rowPostion * this.drawWidth + imgDrwPrps.xOffset;
-    //The y position is the column position multiplied by the height of the segment plus the y offset we calculated for the image
     this.drawYPos = this.columnPosition * this.drawHeight + imgDrwPrps.yOffset;
 
     this.currentY = this.drawYPos;
   }
 
   update() {
-  // 🔸 用真实时间（秒）代替 frameCount
   let t = millis() / 1000.0;
 
   this.currentX = this.drawXPos;
   this.currentY = this.drawYPos;
 
-  // 🔴 layer 0：左右晃
+
   if (this.layerIndex === 0) {
-    let speed = 2.0;              // 注意这里的 speed 变成 “每秒的速度”，数值比原来大
+    let speed = 2.0;             
     let amplitude = this.drawWidth;
 
     let waveOffset = sin(
@@ -204,9 +200,9 @@ class ImageSegment {
     this.currentY = this.drawYPos;    
   }
 
-  // 🟢 layer 2：上下晃
+
   if (this.layerIndex === 2) {
-    let speed = 2.5;              // 同理，这里也是“每秒”
+    let speed = 2.5;              
     let amplitude = this.drawHeight;
 
     let waveOffset = sin(
@@ -216,7 +212,7 @@ class ImageSegment {
     this.currentY = this.drawYPos + waveOffset;
   }
 
-  // 🔵 layer 1：左右晃
+
   if (this.layerIndex === 1) {
     let speed = 3.0;
     let amplitude = this.drawWidth;
