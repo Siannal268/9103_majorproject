@@ -181,8 +181,6 @@ class ImageSegment {
     this.drawXPos = this.rowPosition * this.drawWidth + imgDrwPrps.xOffset;
     this.drawYPos = this.columnPosition * this.drawHeight + imgDrwPrps.yOffset;
 
-    // Called once during setup or when the window is resized
-    this.currentY = this.drawYPos;
   }
 
   animate() {
