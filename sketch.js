@@ -188,17 +188,27 @@ class ImageSegment {
   this.currentY = this.drawYPos;
 
 
-  if (this.layerIndex === 0) {
-    let speed = 2.0;             
-    let amplitude = this.drawWidth;
+    if (this.layerIndex === 0) {
+  
+      let wavelength = 24.0;
+      let k = TWO_PI / wavelength;    
 
-    let waveOffset = sin(
-      t * speed + this.columnPosition * 0.3 + this.phase
-    ) * amplitude;
+      let speed = 0.8;                 
+      let amplitude = this.drawHeight * 0.7;  
 
-    this.currentX = this.drawXPos + waveOffset;
-    this.currentY = this.drawYPos;    
-  }
+
+      let phase = k * this.rowPostion - speed * t;
+
+      let waveOffsetY = sin(phase) * amplitude;
+
+      this.currentX = this.drawXPos;
+      this.currentY = this.drawYPos + waveOffsetY;
+
+
+      this.sizePulse = 0.9 + 0.2 * sin(t * 1.2 + this.phase);
+
+      return; 
+    }
 
 
   if (this.layerIndex === 2) {
